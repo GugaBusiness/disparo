@@ -96,6 +96,18 @@
             margin-top: 10px;
             font-family: monospace;
         }
+
+        .status-container {
+            margin-top: 20px;
+        }
+
+        .status-container ul {
+            padding-left: 20px;
+        }
+
+        .status-container li {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -153,6 +165,11 @@
 
             <div id="status" class="alert mt-3" style="display: none;"></div>
 
+            <div class="status-container">
+                <h5>Relatório de Envio:</h5>
+                <ul id="statusList"></ul>
+            </div>
+
             <div class="text-center mt-3">
                 <small>Desenvolvido por <a href="https://wa.me/559691036670" target="_blank" style="color: #7a52f2;">Nucleo AI</a></small>
             </div>
@@ -175,7 +192,7 @@
                         if (row) {
                             const cols = row.split(';'); // Mudado para ponto e vírgula
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `
+                            tr.innerHTML = ` 
                                 <td>${cols[0] || ''}</td>
                                 <td>${cols[1] || ''}</td>
                                 <td>${cols[2] || ''}</td>
@@ -196,38 +213,40 @@
             e.preventDefault();
             const statusDiv = document.getElementById('status');
             const file = document.getElementById('file').files[0];
-            
-            try {
-                const formData = {
-                    lista: [{
-                        filename: file.name,
-                        mimetype: file.type,
-                        size: file.size
-                    }],
-                    submittedAt: new Date().toISOString(),
-                    formMode: "test"
-                };
+            const statusList = document.getElementById('statusList');
+            const formData = new FormData();
+            formData.append('file', file);
 
+            try {
                 const response = await fetch('https://n8n.nucleo.cloud/form/disparoNucleo', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
+                    body: formData
                 });
 
-                if (response.ok) {
-                    statusDiv.className = 'alert alert-success';
-                    statusDiv.textContent = 'Arquivo enviado com sucesso! Os disparos começarão em breve.';
-                } else {
-                    throw new Error('Erro no envio');
-                }
+                const rows = file.text().split('\n').slice(1); // Pular o cabeçalho
+                rows.forEach(async (row, index) => {
+                    const cols = row.split(';');
+                    const numero = cols[1]; // Número de telefone
+
+                    if (response.ok) {
+                        const li = document.createElement('li');
+                        li.textContent = `Enviado para: ${numero} - Sucesso!`;
+                        statusList.appendChild(li);
+                    } else {
+                        const li = document.createElement('li');
+                        li.textContent = `Enviado para: ${numero} - Falha no envio!`;
+                        statusList.appendChild(li);
+                    }
+                });
+
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'alert alert-success';
+                statusDiv.textContent = 'Disparo de mensagens iniciado!';
             } catch (error) {
+                statusDiv.style.display = 'block';
                 statusDiv.className = 'alert alert-danger';
-                statusDiv.textContent = 'Erro ao enviar arquivo. Por favor, tente novamente.';
-                console.error('Erro:', error);
+                statusDiv.textContent = 'Erro ao enviar o arquivo. Tente novamente.';
             }
-            statusDiv.style.display = 'block';
         });
     </script>
 </body>
