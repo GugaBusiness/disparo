@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disparador WhatsApp - Nucleo AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-color: #1f1f1f;
+            display: flex;
+            align-items: center;
+        }
+
+        .circuitos {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #141414;
+            overflow: hidden;
+        }
+
+        .linha {
+            position: absolute;
+            width: 200px;
+            height: 2px;
+            background-color: rgba(122, 82, 242, 0.7);
+            animation: moverLinhas 5s linear infinite;
+        }
+
+        @keyframes moverLinhas {
+            0% { transform: translateX(-200px); }
+            100% { transform: translateX(100vw); }
+        }
+
+        .linha:nth-child(1) { top: 20%; animation-duration: 8s; }
+        .linha:nth-child(2) { top: 50%; animation-duration: 6s; }
+        .linha:nth-child(3) { top: 80%; animation-duration: 7s; }
+
+        .container {
+            padding: 20px;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .instrucoes {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preview-table {
+            width: 100%;
+            margin-top: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .btn-enviar {
+            background-color: #7a52f2;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .btn-enviar:hover {
+            background-color: #6442d1;
+            color: white;
+        }
+
+        .exemplo-csv {
+            font-size: 13px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="circuitos">
+        <div class="linha"></div>
+        <div class="linha"></div>
+        <div class="linha"></div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="text-center mb-4">Disparador WhatsApp</h2>
+
+            <div class="instrucoes">
+                <h5>📝 Formato da Planilha CSV:</h5>
+                <p>Sua planilha deve conter as seguintes colunas (separadas por ponto e vírgula):</p>
+                <ul>
+                    <li>Nome</li>
+                    <li>Numero (com DDI e DDD - exemplo: 5596991087386)</li>
+                    <li>Cpf</li>
+                    <li>Parcela</li>
+                    <li>Valor liberado</li>
+                    <li>Prazo</li>
+                </ul>
+                <div class="exemplo-csv">
+                    Nome;Numero;Cpf;Parcela;Valor liberado;Prazo<br>
+                    João;5596991087386;;100;10000;96
+                </div>
+            </div>
+
+            <form id="uploadForm">
+                <div class="mb-3">
+                    <label for="file" class="form-label">Escolha sua planilha CSV</label>
+                    <input type="file" class="form-control" id="file" accept=".csv" required>
+                </div>
+
+                <div id="preview" class="preview-table table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Numero</th>
+                                <th>Cpf</th>
+                                <th>Parcela</th>
+                                <th>Valor liberado</th>
+                                <th>Prazo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewBody"></tbody>
+                    </table>
+                </div>
+
+                <button type="submit" class="btn btn-enviar">Iniciar Disparos</button>
+            </form>
+
+            <div id="status" class="alert mt-3" style="display: none;"></div>
+
+            <div class="text-center mt-3">
+                <small>Desenvolvido por <a href="https://wa.me/559691036670" target="_blank" style="color: #7a52f2;">Nucleo AI</a></small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const rows = text.split('\n').slice(0, 4); // Mostra 3 primeiras linhas
+                    const preview = document.getElementById('preview');
+                    const previewBody = document.getElementById('previewBody');
+                    
+                    previewBody.innerHTML = '';
+                    rows.forEach(row => {
+                        if (row) {
+                            const cols = row.split(';'); // Mudado para ponto e vírgula
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${cols[0] || ''}</td>
+                                <td>${cols[1] || ''}</td>
+                                <td>${cols[2] || ''}</td>
+                                <td>${cols[3] || ''}</td>
+                                <td>${cols[4] || ''}</td>
+                                <td>${cols[5] || ''}</td>
+                            `;
+                            previewBody.appendChild(tr);
+                        }
+                    });
+                    preview.style.display = 'block';
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const statusDiv = document.getElementById('status');
+            const file = document.getElementById('file').files[0];
+            
+            try {
+                const formData = {
+                    lista: [{
+                        filename: file.name,
+                        mimetype: file.type,
+                        size: file.size
+                    }],
+                    submittedAt: new Date().toISOString(),
+                    formMode: "test"
+                };
+
+                const response = await fetch('https://n8n.nucleo.cloud/form/disparoNucleo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    statusDiv.className = 'alert alert-success';
+                    statusDiv.textContent = 'Arquivo enviado com sucesso! Os disparos começarão em breve.';
+                } else {
+                    throw new Error('Erro no envio');
+                }
+            } catch (error) {
+                statusDiv.className = 'alert alert-danger';
+                statusDiv.textContent = 'Erro ao enviar arquivo. Por favor, tente novamente.';
+                console.error('Erro:', error);
+            }
+            statusDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
