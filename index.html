@@ -78,6 +78,9 @@
             return;
         }
 
+        // Log do arquivo selecionado
+        console.log('Arquivo selecionado:', file.name, file);
+
         var formData = new FormData();
         formData.append('csvFile', file);
 
@@ -92,24 +95,30 @@
             }
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha na requisição: ' + response.statusText);
-            }
-            return response.json();
+            console.log('Resposta do Webhook status:', response.status);
+            return response.json(); // Retorna o JSON para análise
         })
         .then(data => {
-            // Se a requisição for bem-sucedida
-            document.getElementById('status').innerText = 'Arquivo enviado com sucesso!';
-            document.getElementById('status').classList.remove('error');
-            document.getElementById('status').classList.add('success');
-            console.log('Resposta do Webhook:', data);
+            console.log('Resposta completa do Webhook:', data);
+
+            if (data.status === 200) {
+                // Se a requisição for bem-sucedida
+                document.getElementById('status').innerText = 'Arquivo enviado com sucesso!';
+                document.getElementById('status').classList.remove('error');
+                document.getElementById('status').classList.add('success');
+            } else {
+                // Caso a resposta não seja a esperada
+                document.getElementById('status').innerText = 'Erro ao processar o arquivo.';
+                document.getElementById('status').classList.remove('success');
+                document.getElementById('status').classList.add('error');
+            }
         })
         .catch(error => {
             // Se houver erro no envio
+            console.error('Erro ao enviar arquivo:', error);
             document.getElementById('status').innerText = 'Erro ao enviar o arquivo.';
             document.getElementById('status').classList.remove('success');
             document.getElementById('status').classList.add('error');
-            console.error('Erro:', error);
         });
     });
 </script>
