@@ -3,56 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário Personalizado - Envio de CSV</title>
+    <title>Formulário Personalizado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        input[type="file"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Envie o arquivo CSV</h1>
-
-    <!-- Formulário para upload do arquivo -->
-    <form id="fileForm" enctype="multipart/form-data">
-        <label for="csvFile">Escolha o arquivo .csv:</label>
-        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
-        <button type="submit">Enviar</button>
-    </form>
-
-    <script>
-        document.getElementById('fileForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
-
-            // Obtém o arquivo selecionado
-            const fileInput = document.getElementById('csvFile');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert("Por favor, selecione um arquivo .csv");
-                return;
-            }
-
-            // Cria um FormData para enviar o arquivo
-            const formData = new FormData();
-            formData.append('csvFile', file);
-
-            // Webhook do n8n
-            const webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // Substitua com o seu webhook
-
-            // Envia a requisição via fetch
-            fetch(webhookUrl, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 200) {
-                    alert("Arquivo enviado com sucesso e mensagens disparadas!");
-                } else {
-                    alert("Erro ao enviar o arquivo.");
-                }
-            })
-            .catch(error => {
-                console.error("Erro ao enviar o arquivo:", error);
-                alert("Erro ao enviar o arquivo. Tente novamente.");
-            });
-        });
-    </script>
+    <div class="form-container">
+        <h2>Disparo de Mensagens no WhatsApp</h2>
+        <p>Envie seu arquivo CSV:</p>
+        <form action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
+            <label for="csvFile">Arquivo CSV:</label>
+            <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+            <input type="submit" value="Enviar">
+        </form>
+    </div>
 </body>
 </html>
