@@ -223,18 +223,20 @@
                     body: formData
                 });
 
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar o arquivo');
+                }
+
+                // Processando os dados de resposta
                 const rows = (await response.text()).split('\n').slice(1); // Pular o cabeçalho
-                rows.forEach(async (row, index) => {
+                rows.forEach((row, index) => {
                     const cols = row.split(';');
                     const numero = cols[1]; // Número de telefone
 
-                    if (response.ok) {
+                    // Emular o disparo para cada número
+                    if (numero) {
                         const li = document.createElement('li');
                         li.textContent = `Enviado para: ${numero} - Sucesso!`;
-                        statusList.appendChild(li);
-                    } else {
-                        const li = document.createElement('li');
-                        li.textContent = `Enviado para: ${numero} - Falha no envio!`;
                         statusList.appendChild(li);
                     }
                 });
