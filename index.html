@@ -1,125 +1,171 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disparo de Mensagens no WhatsApp</title>
+    <title>Formulário de Envio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #fff;
-            color: #000;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-color: #1f1f1f;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
+
+        .circuitos {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #141414;
+            overflow: hidden;
+        }
+
+        .linha {
+            position: absolute;
+            width: 200px;
+            height: 2px;
+            background-color: rgba(122, 82, 242, 0.7);
+            animation: moverLinhas 5s linear infinite;
+        }
+
+        @keyframes moverLinhas {
+            0% { transform: translateX(-200px); }
+            100% { transform: translateX(100vw); }
+        }
+
+        .linha:nth-child(1) { top: 20%; animation-duration: 8s; }
+        .linha:nth-child(2) { top: 50%; animation-duration: 6s; }
+        .linha:nth-child(3) { top: 80%; animation-duration: 7s; }
+
         .container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
+            padding: 20px;
         }
-        h2 {
-            font-size: 28px;
-            color: #000;
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .instrucoes {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 20px;
-            font-weight: 600;
         }
-        label {
-            font-size: 16px;
-            color: #000;
-            display: block;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-        input[type="file"], input[type="submit"] {
+
+        .preview-table {
             width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-        input[type="file"]:focus, input[type="submit"]:focus {
-            outline: none;
-            border-color: #007BFF;
-        }
-        input[type="submit"] {
-            background-color: #007BFF;
-            color: #fff;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        .message {
+            margin-top: 20px;
+            display: none;
             font-size: 14px;
-            color: #333;
+        }
+
+        .btn-enviar {
+            background-color: #7a52f2;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 500;
             margin-top: 20px;
         }
-        .message.success {
-            color: #28a745;
+
+        .btn-enviar:hover {
+            background-color: #6442d1;
+            color: white;
         }
-        .message.error {
-            color: #dc3545;
+
+        .exemplo-csv {
+            font-size: 13px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        .status-container {
+            margin-top: 20px;
+        }
+
+        .status-container ul {
+            padding-left: 20px;
+        }
+
+        .status-container li {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
+    <!-- Fundo com linhas animadas -->
+    <div class="circuitos">
+        <div class="linha"></div>
+        <div class="linha"></div>
+        <div class="linha"></div>
+    </div>
 
+    <!-- Formulário -->
     <div class="container">
-        <h2>Envio de Arquivo CSV para Disparo de Mensagens no WhatsApp</h2>
-        <p style="color: #666;">Envie seu arquivo CSV para iniciar o disparo de mensagens.</p>
-        
-        <form id="uploadForm" action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
-            <label for="csvFile">Selecione o arquivo CSV:</label>
-            <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
-            <input type="submit" value="Enviar Arquivo">
-        </form>
+        <div class="form-container">
+            <h2>Disparo de Mensagens no WhatsApp</h2>
+            <p class="instrucoes">São aceitos somente arquivos em .csv.</p>
 
-        <div class="message" id="message"></div>
+            <form id="form" enctype="multipart/form-data">
+                <label for="arquivo">Escolha o arquivo .csv:</label>
+                <input type="file" id="arquivo" name="arquivo" accept=".csv" required>
+                
+                <div class="exemplo-csv">
+                    <strong>Exemplo de arquivo .csv:</strong>
+                    <pre>nome,telefone
+João,123456789
+Maria,987654321</pre>
+                </div>
+
+                <button type="submit" class="btn-enviar">Enviar Arquivo</button>
+            </form>
+
+            <div class="status-container" id="status-container"></div>
+        </div>
     </div>
 
     <script>
-        const form = document.getElementById('uploadForm');
-        const messageDiv = document.getElementById('message');
-        
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+        const form = document.getElementById('form');
+        const statusContainer = document.getElementById('status-container');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
             const formData = new FormData(form);
-            
+            statusContainer.innerHTML = '<p>Enviando arquivo...</p>';
+
             try {
-                const response = await fetch(form.action, {
+                const response = await fetch('https://n8n.nucleo.cloud/form/disparoNucleo', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
                 });
 
-                if (!response.ok) {
-                    throw new Error('Erro ao enviar o arquivo');
-                }
-
                 const data = await response.json();
-                console.log(data);
-                messageDiv.textContent = 'Arquivo enviado com sucesso!';
-                messageDiv.classList.add('success');
+                
+                if (response.ok) {
+                    statusContainer.innerHTML = '<ul><li>Arquivo enviado com sucesso!</li></ul>';
+                } else {
+                    statusContainer.innerHTML = '<ul><li>Erro ao enviar arquivo.</li><li>' + (data.error || 'Erro desconhecido') + '</li></ul>';
+                }
             } catch (error) {
-                console.error('Erro:', error);
-                messageDiv.textContent = 'Ocorreu um erro ao enviar o arquivo.';
-                messageDiv.classList.add('error');
+                statusContainer.innerHTML = '<ul><li>Erro na requisição: ' + error.message + '</li></ul>';
             }
         });
     </script>
