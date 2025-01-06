@@ -3,127 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Envio de Arquivo CSV</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        .status.success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .status.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        input[type="file"] {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Formulário Personalizado - Envio de CSV</title>
 </head>
 <body>
+    <h1>Envie o arquivo CSV</h1>
 
-<div class="container">
-    <h1>Envio de Arquivo CSV</h1>
-    <p>Selecione um arquivo CSV para enviar e acionar o Webhook do n8n.</p>
+    <!-- Formulário para upload do arquivo -->
+    <form id="fileForm" enctype="multipart/form-data">
+        <label for="csvFile">Escolha o arquivo .csv:</label>
+        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+        <button type="submit">Enviar</button>
+    </form>
 
-    <input type="file" id="csvFile" accept=".csv">
-    <button id="submitBtn">Enviar Arquivo</button>
+    <script>
+        document.getElementById('fileForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
 
-    <div id="status" class="status"></div>
-</div>
+            // Obtém o arquivo selecionado
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
 
-<script>
-    document.getElementById('submitBtn').addEventListener('click', function () {
-        var fileInput = document.getElementById('csvFile');
-        var file = fileInput.files[0];
-
-        if (!file) {
-            document.getElementById('status').innerText = 'Por favor, selecione um arquivo CSV.';
-            document.getElementById('status').classList.add('error');
-            return;
-        }
-
-        // Log do arquivo selecionado
-        console.log('Arquivo selecionado:', file.name, file);
-
-        var formData = new FormData();
-        formData.append('csvFile', file);
-        formData.append('phoneNumber', '1234567890');  // Exemplo de número de telefone
-        formData.append('messageBody', 'Mensagem exemplo para disparo');  // Exemplo de mensagem
-
-        var webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // URL do Webhook
-
-        // Enviando a requisição com o arquivo para o Webhook
-        fetch(webhookUrl, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json' // Definindo o tipo de resposta esperada
+            if (!file) {
+                alert("Por favor, selecione um arquivo .csv");
+                return;
             }
-        })
-        .then(response => {
-            console.log('Resposta do Webhook status:', response.status);
-            return response.json(); // Retorna o JSON para análise
-        })
-        .then(data => {
-            console.log('Resposta completa do Webhook:', data);
 
-            if (data.status === 200) {
-                // Se a requisição for bem-sucedida
-                document.getElementById('status').innerText = 'Arquivo enviado com sucesso!';
-                document.getElementById('status').classList.remove('error');
-                document.getElementById('status').classList.add('success');
-            } else {
-                // Caso a resposta não seja a esperada
-                document.getElementById('status').innerText = 'Erro ao processar o arquivo.';
-                document.getElementById('status').classList.remove('success');
-                document.getElementById('status').classList.add('error');
-            }
-        })
-        .catch(error => {
-            // Se houver erro no envio
-            console.error('Erro ao enviar arquivo:', error);
-            document.getElementById('status').innerText = 'Erro ao enviar o arquivo.';
-            document.getElementById('status').classList.remove('success');
-            document.getElementById('status').classList.add('error');
+            // Cria um FormData para enviar o arquivo
+            const formData = new FormData();
+            formData.append('csvFile', file);
+
+            // Webhook do n8n
+            const webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // Substitua com o seu webhook
+
+            // Envia a requisição via fetch
+            fetch(webhookUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
+                    alert("Arquivo enviado com sucesso e mensagens disparadas!");
+                } else {
+                    alert("Erro ao enviar o arquivo.");
+                }
+            })
+            .catch(error => {
+                console.error("Erro ao enviar o arquivo:", error);
+                alert("Erro ao enviar o arquivo. Tente novamente.");
+            });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
