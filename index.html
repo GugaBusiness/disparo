@@ -83,6 +83,8 @@
 
         var formData = new FormData();
         formData.append('csvFile', file);
+        formData.append('phoneNumber', '1234567890');  // Exemplo de número de telefone
+        formData.append('messageBody', 'Mensagem exemplo para disparo');  // Exemplo de mensagem
 
         var webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // URL do Webhook
 
