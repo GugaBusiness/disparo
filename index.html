@@ -5,70 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disparo de Mensagens no WhatsApp</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
         .container {
-            max-width: 600px;
-            margin: 40px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #111;
+            padding: 30px;
             border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
         }
         h2 {
-            font-size: 24px;
+            font-size: 28px;
+            color: #fff;
+            text-align: center;
             margin-bottom: 20px;
         }
         label {
             font-size: 16px;
-            margin-bottom: 10px;
+            color: #fff;
             display: block;
+            margin-bottom: 10px;
         }
         input[type="file"], input[type="submit"] {
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
         }
         input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
+            background-color: #444;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         input[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: #666;
         }
         .message {
+            font-size: 14px;
+            color: #bbb;
+            text-align: center;
             margin-top: 20px;
-            font-size: 16px;
-            color: #555;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h2>Envio de Arquivo CSV para Disparo de Mensagens no WhatsApp</h2>
-        <p>Envie seu arquivo CSV contendo os dados necessários para o disparo das mensagens no WhatsApp.</p>
+        <p style="text-align: center; color: #bbb;">Envie seu arquivo CSV para iniciar o disparo de mensagens.</p>
         
-        <!-- Formulário que envia o arquivo para o endpoint do n8n -->
         <form id="uploadForm" action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
             <label for="csvFile">Selecione o arquivo CSV:</label>
             <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
             <input type="submit" value="Enviar Arquivo">
         </form>
 
-        <!-- Mensagem para o usuário após o envio -->
         <div class="message" id="message"></div>
     </div>
 
     <script>
-        // Função para mostrar uma mensagem após envio
         const form = document.getElementById("uploadForm");
         const messageDiv = document.getElementById("message");
 
@@ -84,14 +97,18 @@
             .then(data => {
                 if (data.success) {
                     messageDiv.textContent = "Arquivo enviado com sucesso! O disparo de mensagens será processado.";
+                    messageDiv.style.color = "#90EE90";  // Verde claro para sucesso
                 } else {
                     messageDiv.textContent = "Houve um erro no envio do arquivo. Tente novamente!";
+                    messageDiv.style.color = "#FF6347";  // Vermelho para erro
                 }
             })
             .catch(error => {
                 messageDiv.textContent = "Erro ao enviar o arquivo. Tente novamente!";
+                messageDiv.style.color = "#FF6347";  // Vermelho para erro
             });
         });
     </script>
+
 </body>
 </html>
