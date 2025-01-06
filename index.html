@@ -223,7 +223,7 @@
                     body: formData
                 });
 
-                const rows = file.text().split('\n').slice(1); // Pular o cabeçalho
+                const rows = (await response.text()).split('\n').slice(1); // Pular o cabeçalho
                 rows.forEach(async (row, index) => {
                     const cols = row.split(';');
                     const numero = cols[1]; // Número de telefone
