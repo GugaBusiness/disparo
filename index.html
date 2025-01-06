@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário Personalizado</title>
+    <title>Formulário de Disparo de Mensagens</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,9 +29,9 @@
 <body>
     <div class="form-container">
         <h2>Disparo de Mensagens no WhatsApp</h2>
-        <p>Envie seu arquivo CSV:</p>
+        <p>Envie seu arquivo CSV com os dados para disparo de mensagens:</p>
         <form action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
-            <label for="csvFile">Arquivo CSV:</label>
+            <label for="csvFile">Selecione o arquivo CSV:</label>
             <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
             <input type="submit" value="Enviar">
         </form>
