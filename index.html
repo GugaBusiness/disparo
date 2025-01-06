@@ -3,19 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário de Envio</title>
+    <title>Envio de Arquivo CSV</title>
 </head>
 <body>
-    <h2>Envio de Arquivo CSV</h2>
-    <form id="uploadForm" action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
+    <h2>Enviar Arquivo CSV</h2>
+
+    <!-- Formulário para enviar o arquivo -->
+    <form id="uploadForm" enctype="multipart/form-data">
         <label for="csvFile">Escolha o arquivo CSV:</label>
         <input type="file" id="csvFile" name="csvFile" accept=".csv" required><br><br>
         <button type="submit">Enviar</button>
     </form>
 
+    <p id="status"></p>
+
     <script>
+        // Função que envia o arquivo CSV para o Webhook do n8n via POST
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            alert('Arquivo enviado com sucesso!');
+            event.preventDefault();  // Previne o envio padrão do formulário
+
+            // Obtém o arquivo selecionado
+            var file = document.getElementById('csvFile').files[0];
+            var formData = new FormData();
+            formData.append('csvFile', file);
+
+            // URL do seu Webhook no n8n
+            var webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // Substitua com o URL correto do seu webhook
+
+            // Envia o arquivo usando Fetch API
+            fetch(webhookUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // Resposta do servidor
+            .then(data => {
+                document.getElementById('status').innerText = 'Arquivo enviado com sucesso!';
+                console.log(data);  // Mostra a resposta no console (opcional)
+            })
+            .catch(error => {
+                document.getElementById('status').innerText = 'Erro ao enviar o arquivo.';
+                console.error('Erro:', error);  // Mostra o erro no console
+            });
         });
     </script>
 </body>
