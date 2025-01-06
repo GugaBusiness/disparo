@@ -36,9 +36,13 @@
             // URL do seu Webhook no n8n
             var webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // Substitua com a URL correta do seu webhook
 
-            // Verifique se o arquivo está sendo adicionado ao FormData
+            // Verificar se o arquivo está sendo adicionado ao FormData
             console.log('Arquivo selecionado:', file);
-            console.log('FormData:', formData);
+
+            // Exibir os dados do FormData
+            for (var pair of formData.entries()) {
+                console.log(pair[0]+ ', ' + pair[1].name);  // Loga o nome do arquivo enviado
+            }
 
             // Envia o arquivo usando Fetch API
             fetch(webhookUrl, {
