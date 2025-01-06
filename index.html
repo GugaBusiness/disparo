@@ -1,70 +1,118 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envio de Arquivo CSV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        input[type="file"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h2>Enviar Arquivo CSV</h2>
 
-    <!-- Formulário para enviar o arquivo -->
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="csvFile">Escolha o arquivo CSV:</label>
-        <input type="file" id="csvFile" name="csvFile" accept=".csv" required><br><br>
-        <button type="submit">Enviar</button>
-    </form>
+<div class="container">
+    <h1>Envio de Arquivo CSV</h1>
+    <p>Selecione um arquivo CSV para enviar e acionar o Webhook do n8n.</p>
 
-    <p id="status"></p>
+    <input type="file" id="csvFile" accept=".csv">
+    <button id="submitBtn">Enviar Arquivo</button>
 
-    <script>
-        // Função que envia o arquivo CSV para o Webhook do n8n via POST
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Previne o envio padrão do formulário
+    <div id="status" class="status"></div>
+</div>
 
-            // Verifique se um arquivo foi selecionado
-            var fileInput = document.getElementById('csvFile');
-            if (!fileInput.files.length) {
-                document.getElementById('status').innerText = 'Por favor, selecione um arquivo CSV!';
-                return;
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        var fileInput = document.getElementById('csvFile');
+        var file = fileInput.files[0];
+
+        if (!file) {
+            document.getElementById('status').innerText = 'Por favor, selecione um arquivo CSV.';
+            document.getElementById('status').classList.add('error');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('csvFile', file);
+
+        var webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // URL do Webhook
+
+        // Enviando a requisição com o arquivo para o Webhook
+        fetch(webhookUrl, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json' // Definindo o tipo de resposta esperada
             }
-
-            var file = fileInput.files[0];
-            var formData = new FormData();
-            formData.append('csvFile', file);
-
-            // URL do seu Webhook no n8n
-            var webhookUrl = 'https://n8n.nucleo.cloud/form/disparoNucleo'; // Substitua com a URL correta do seu webhook
-
-            // Verificar se o arquivo está sendo adicionado ao FormData
-            console.log('Arquivo selecionado:', file);
-
-            // Exibir os dados do FormData
-            for (var pair of formData.entries()) {
-                console.log(pair[0]+ ', ' + pair[1].name);  // Loga o nome do arquivo enviado
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha na requisição: ' + response.statusText);
             }
-
-            // Envia o arquivo usando Fetch API
-            fetch(webhookUrl, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Se a resposta não for ok, lançar erro
-                    throw new Error('Falha na requisição: ' + response.statusText);
-                }
-                return response.json();  // Tenta analisar o JSON de resposta
-            })
-            .then(data => {
-                document.getElementById('status').innerText = 'Arquivo enviado com sucesso!';
-                console.log('Resposta do Webhook:', data);  // Mostra a resposta do servidor no console
-            })
-            .catch(error => {
-                document.getElementById('status').innerText = 'Erro ao enviar o arquivo.';
-                console.error('Erro:', error);  // Mostra o erro no console
-            });
+            return response.json();
+        })
+        .then(data => {
+            // Se a requisição for bem-sucedida
+            document.getElementById('status').innerText = 'Arquivo enviado com sucesso!';
+            document.getElementById('status').classList.remove('error');
+            document.getElementById('status').classList.add('success');
+            console.log('Resposta do Webhook:', data);
+        })
+        .catch(error => {
+            // Se houver erro no envio
+            document.getElementById('status').innerText = 'Erro ao enviar o arquivo.';
+            document.getElementById('status').classList.remove('success');
+            document.getElementById('status').classList.add('error');
+            console.error('Erro:', error);
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
