@@ -12,8 +12,8 @@
         }
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #000;
-            color: #fff;
+            background-color: #fff;
+            color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,48 +21,60 @@
             margin: 0;
         }
         .container {
-            background-color: #111;
-            padding: 30px;
+            background-color: #fff;
+            padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
+            text-align: center;
         }
         h2 {
             font-size: 28px;
-            color: #fff;
-            text-align: center;
+            color: #000;
             margin-bottom: 20px;
+            font-weight: 600;
         }
         label {
             font-size: 16px;
-            color: #fff;
+            color: #000;
             display: block;
             margin-bottom: 10px;
+            text-align: left;
         }
         input[type="file"], input[type="submit"] {
             width: 100%;
             padding: 12px;
             border-radius: 6px;
-            border: 1px solid #333;
-            background-color: #222;
-            color: #fff;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            color: #333;
             font-size: 16px;
             margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        input[type="file"]:focus, input[type="submit"]:focus {
+            outline: none;
+            border-color: #007BFF;
         }
         input[type="submit"] {
-            background-color: #444;
+            background-color: #007BFF;
+            color: #fff;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
         input[type="submit"]:hover {
-            background-color: #666;
+            background-color: #0056b3;
         }
         .message {
             font-size: 14px;
-            color: #bbb;
-            text-align: center;
+            color: #333;
             margin-top: 20px;
+        }
+        .message.success {
+            color: #28a745;
+        }
+        .message.error {
+            color: #dc3545;
         }
     </style>
 </head>
@@ -70,7 +82,7 @@
 
     <div class="container">
         <h2>Envio de Arquivo CSV para Disparo de Mensagens no WhatsApp</h2>
-        <p style="text-align: center; color: #bbb;">Envie seu arquivo CSV para iniciar o disparo de mensagens.</p>
+        <p style="color: #666;">Envie seu arquivo CSV para iniciar o disparo de mensagens.</p>
         
         <form id="uploadForm" action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
             <label for="csvFile">Selecione o arquivo CSV:</label>
@@ -109,16 +121,16 @@
 
                 if (data.success) {
                     messageDiv.textContent = "Arquivo enviado com sucesso! O disparo de mensagens será processado.";
-                    messageDiv.style.color = "#90EE90";  // Verde claro para sucesso
+                    messageDiv.className = "message success";  // Estilo de sucesso
                 } else {
                     messageDiv.textContent = "Houve um erro no envio do arquivo. Tente novamente!";
-                    messageDiv.style.color = "#FF6347";  // Vermelho para erro
+                    messageDiv.className = "message error";  // Estilo de erro
                 }
             })
             .catch(error => {
                 console.error("Erro ao enviar o arquivo:", error);  // Logando erros
                 messageDiv.textContent = "Erro ao enviar o arquivo. Tente novamente!";
-                messageDiv.style.color = "#FF6347";  // Vermelho para erro
+                messageDiv.className = "message error";  // Estilo de erro
             });
         });
     </script>
