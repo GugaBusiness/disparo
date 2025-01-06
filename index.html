@@ -87,14 +87,26 @@
 
         form.addEventListener("submit", function(event) {
             event.preventDefault();  // Impede o envio padrão do formulário
-            const formData = new FormData(form);
 
+            const formData = new FormData(form);
+            console.log("Form Data:", formData);  // Logando o FormData
+
+            // Enviando a requisição para o servidor
             fetch(form.action, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())  // Supondo que o n8n retorne um JSON
+            .then(response => {
+                console.log("Resposta do servidor:", response);  // Logando a resposta do servidor
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Erro na resposta do servidor');
+                }
+            })
             .then(data => {
+                console.log("Dados da resposta:", data);  // Logando os dados da resposta JSON
+
                 if (data.success) {
                     messageDiv.textContent = "Arquivo enviado com sucesso! O disparo de mensagens será processado.";
                     messageDiv.style.color = "#90EE90";  // Verde claro para sucesso
@@ -104,6 +116,7 @@
                 }
             })
             .catch(error => {
+                console.error("Erro ao enviar o arquivo:", error);  // Logando erros
                 messageDiv.textContent = "Erro ao enviar o arquivo. Tente novamente!";
                 messageDiv.style.color = "#FF6347";  // Vermelho para erro
             });
