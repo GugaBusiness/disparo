@@ -3,38 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário de Disparo de Mensagens</title>
+    <title>Disparo de Mensagens no WhatsApp</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
         }
-        .form-container {
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
             background-color: #fff;
             padding: 20px;
-            border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: 0 auto;
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: block;
         }
         input[type="file"], input[type="submit"] {
             width: 100%;
             padding: 10px;
             margin-top: 10px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Disparo de Mensagens no WhatsApp</h2>
-        <p>Envie seu arquivo CSV com os dados para disparo de mensagens:</p>
+    <div class="container">
+        <h2>Envio de Arquivo CSV para Disparo de Mensagens no WhatsApp</h2>
+        <p>Envie seu arquivo CSV contendo os dados necessários para o disparo das mensagens no WhatsApp.</p>
+        
+        <!-- Formulário que envia o arquivo para o endpoint do n8n -->
         <form action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
             <label for="csvFile">Selecione o arquivo CSV:</label>
             <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
-            <input type="submit" value="Enviar">
+            <input type="submit" value="Enviar Arquivo">
         </form>
+
+        <!-- Mensagem para o usuário após o envio -->
+        <div class="message">
+            <p>Após enviar o arquivo, ele será processado para realizar o disparo de mensagens. Aguarde a confirmação.</p>
+        </div>
     </div>
 </body>
 </html>
