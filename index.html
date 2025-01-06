@@ -57,16 +57,41 @@
         <p>Envie seu arquivo CSV contendo os dados necessários para o disparo das mensagens no WhatsApp.</p>
         
         <!-- Formulário que envia o arquivo para o endpoint do n8n -->
-        <form action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
+        <form id="uploadForm" action="https://n8n.nucleo.cloud/form/disparoNucleo" method="POST" enctype="multipart/form-data">
             <label for="csvFile">Selecione o arquivo CSV:</label>
             <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
             <input type="submit" value="Enviar Arquivo">
         </form>
 
         <!-- Mensagem para o usuário após o envio -->
-        <div class="message">
-            <p>Após enviar o arquivo, ele será processado para realizar o disparo de mensagens. Aguarde a confirmação.</p>
-        </div>
+        <div class="message" id="message"></div>
     </div>
+
+    <script>
+        // Função para mostrar uma mensagem após envio
+        const form = document.getElementById("uploadForm");
+        const messageDiv = document.getElementById("message");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();  // Impede o envio padrão do formulário
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // Supondo que o n8n retorne um JSON
+            .then(data => {
+                if (data.success) {
+                    messageDiv.textContent = "Arquivo enviado com sucesso! O disparo de mensagens será processado.";
+                } else {
+                    messageDiv.textContent = "Houve um erro no envio do arquivo. Tente novamente!";
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = "Erro ao enviar o arquivo. Tente novamente!";
+            });
+        });
+    </script>
 </body>
 </html>
